@@ -34,24 +34,24 @@ describe('buildMarkdown', () => {
     expect(md).toContain('输出 tokens 85')
     expect(md).toContain('缓存读取 600')
     expect(md).toContain('deepseek-v4-pro×1')
-    expect(md).toContain('航段: 2')
+    expect(md).toContain('对话轮次: 2')
   })
 
   it('prints one section per leg with its reason', () => {
-    expect(md).toContain('## 航段 1 · 9 s · completed')
-    expect(md).toContain('## 航段 2 · 3 s · aborted')
+    expect(md).toContain('## 第 1 轮 · 9 s · completed')
+    expect(md).toContain('## 第 2 轮 · 3 s · aborted')
   })
 
   it('carries the row labels the view uses', () => {
-    expect(md).toContain('[指令] 先把 key = ')
-    expect(md).toContain('[复命] 我会写入配置。')
-    expect(md).toContain('[压缩]')
+    expect(md).toContain('[你] 先把 key = ')
+    expect(md).toContain('[AI 回复] 我会写入配置。')
+    expect(md).toContain('[上下文压缩]')
     expect(md).toContain('[审批]')
     expect(md).toContain('[重试]')
   })
 
   it('notes the tool that never got a result and the call that failed', () => {
-    expect(md).toContain('未收到回执')
+    expect(md).toContain('没有返回结果')
     expect(md).toContain('⚠ ToolError · TOOL_FAILED · remote rejected')
   })
 
@@ -61,8 +61,8 @@ describe('buildMarkdown', () => {
   })
 
   it('closes with the local-processing and no-cost promises', () => {
-    expect(md).toContain('全部数据只在本地处理，未上传任何内容。')
-    expect(md).toContain('用量为日志实测值，未估算费用。')
+    expect(md).toContain('全部数据只在本机处理，没有上传任何内容。')
+    expect(md).toContain('用量是从日志里数出来的，没有估算费用。')
     expect(md).toContain(`已自动脱敏 ${log.redaction.count} 处`)
   })
 
@@ -88,7 +88,7 @@ describe('buildMarkdown', () => {
 
   it('flags a leg that was capped', () => {
     const capped = foldSample(sampleEvents, { redactSecrets: true, maxTurnEvents: 3 })
-    expect(buildMarkdown(capped, t)).toContain('本航段行数已达上限')
+    expect(buildMarkdown(capped, t)).toContain('这一轮事件太多，只显示了前面一部分')
   })
 
   it('says redaction was off instead of pretending', () => {
@@ -124,7 +124,7 @@ describe('buildReportHtml', () => {
   })
 
   it('renders the readings grid from measured values only', () => {
-    for (const label of ['航段', '步骤', '工具调用', '失败调用', '改动文件', '读取文件', '航行时长', '原始事件', '输入 tokens', '输出 tokens', '缓存读取']) {
+    for (const label of ['对话轮次', '步骤', '工具调用', '失败调用', '改动文件', '读取文件', '总耗时', '原始事件', '输入 tokens', '输出 tokens', '缓存读取']) {
       expect(html).toContain(`<span>${label}</span>`)
     }
     expect(html).toContain('<b>1,210</b>')
@@ -141,8 +141,8 @@ describe('buildReportHtml', () => {
 
   it('keeps the whale mark inline and the footer honest', () => {
     expect(html).toContain('<svg viewBox="0 0 48 48"')
-    expect(html).toContain('全部数据只在本地处理，未上传任何内容。')
-    expect(html).toContain('用量为日志实测值，未估算费用。')
+    expect(html).toContain('全部数据只在本机处理，没有上传任何内容。')
+    expect(html).toContain('用量是从日志里数出来的，没有估算费用。')
   })
 
   it('can drop the redaction note', () => {
@@ -150,15 +150,15 @@ describe('buildReportHtml', () => {
   })
 
   it('says so when a leg was capped or an empty fold exports', () => {
-    expect(buildReportHtml(foldSample(sampleEvents, { redactSecrets: true, maxTurnEvents: 3 }), t, reportOptions)).toContain('本航段行数已达上限')
+    expect(buildReportHtml(foldSample(sampleEvents, { redactSecrets: true, maxTurnEvents: 3 }), t, reportOptions)).toContain('这一轮事件太多，只显示了前面一部分')
     const empty = foldSample([])
-    expect(buildReportHtml(empty, t, reportOptions)).toContain('这次会话还没有可折叠的航行记录。')
+    expect(buildReportHtml(empty, t, reportOptions)).toContain('这次会话还没有可显示的事件。')
     expect(buildReportHtml(empty, t, reportOptions)).toContain('没有工具调用记录。')
-    expect(buildReportHtml(empty, t, reportOptions)).toContain('这次航行没有改动任何文件。')
+    expect(buildReportHtml(empty, t, reportOptions)).toContain('这次会话没有改动任何文件。')
   })
 
   it('warns when redaction was disabled', () => {
     const raw = foldSample(sampleEvents, { redactSecrets: false, maxTurnEvents: 240 })
-    expect(buildReportHtml(raw, t, reportOptions)).toContain('脱敏已在配置中关闭')
+    expect(buildReportHtml(raw, t, reportOptions)).toContain('配置里关闭了自动脱敏')
   })
 })

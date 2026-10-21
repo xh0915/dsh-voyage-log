@@ -76,8 +76,8 @@ describe('voyage runtime', () => {
     const cases: Array<[string, string]> = [
       ['SESSION_QUERY_SESSION_NOT_FOUND', '还没有可读取的日志'],
       ['SESSION_QUERY_ABORTED', '已取消'],
-      ['SESSION_QUERY_CORRUPT_SESSION', '拒绝猜测内容'],
-      ['SESSION_QUERY_INVALID_SURFACE', '拒绝猜测内容'],
+      ['SESSION_QUERY_CORRUPT_SESSION', '不会去猜内容'],
+      ['SESSION_QUERY_INVALID_SURFACE', '不会去猜内容'],
       ['SESSION_QUERY_PERSISTENCE_FAILED', '稍后重试'],
     ]
     for (const [code, expected] of cases) {

@@ -2,7 +2,7 @@
   "id": "dsh-voyage-log",
   "version": "0.1.0",
   "main": "lib/index.js",
-  "description": "航海日志 · Voyage Log — folds the real session log into a navigable voyage with local redaction and HTML export.",
+  "description": "航海日志 · Voyage Log — turns a DSH session into a readable report, masks secrets on your machine, and exports one offline HTML file.",
   "engines": { "dsh": ">=0.1.0-rc.6" },
   "contributes": { "tools": [], "skills": [] }
 }

@@ -28,9 +28,9 @@ function voyageFailure(reason: unknown): Error {
   const code = (reason as { code?: unknown }).code
   if (typeof code === 'string') {
     if (code === NOT_FOUND) return new Error('这个会话还没有可读取的日志。')
-    if (code === ABORTED) return new Error('航海日志的读取已取消。')
-    if (code === CORRUPT || code === INVALID_SURFACE) return new Error('会话日志无法通过校验，航海日志拒绝猜测内容。')
-    if (code === PERSISTENCE) return new Error('会话持久层当前不可读，稍后重试。')
+    if (code === ABORTED) return new Error('读取已取消。')
+    if (code === CORRUPT || code === INVALID_SURFACE) return new Error('会话日志格式不对，插件不会去猜内容。')
+    if (code === PERSISTENCE) return new Error('现在读不到会话记录，请稍后重试。')
   }
   return reason instanceof Error ? reason : new Error(String(reason))
 }
@@ -55,7 +55,7 @@ export class VoyageRuntime extends TypertRemoteService {
     } catch (reason) {
       throw voyageFailure(reason)
     }
-    if (signal?.aborted) throw new Error('航海日志的读取已取消。')
+    if (signal?.aborted) throw new Error('读取已取消。')
 
     const header = snapshot.session as unknown as RawHeader
     const report = foldSession(

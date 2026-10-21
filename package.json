@@ -1,7 +1,7 @@
 {
   "name": "dsh-voyage-log",
   "version": "0.1.0",
-  "description": "航海日志 · Voyage Log — a dual-side DeepSeek Harness plugin that folds the real session log of the current conversation into a navigable voyage: turns, tool calls, file cargo, token readings, with local secret redaction and self-contained HTML export.",
+  "description": "航海日志 · Voyage Log — a DeepSeek Harness plugin that turns a session's log into a readable report: what happened each turn, which tools ran, which files changed, and how many tokens were used. Secrets are masked on your machine before they reach the page, and the report exports as one offline HTML file.",
   "license": "MIT",
   "type": "module",
   "packageManager": "pnpm@10.17.0",

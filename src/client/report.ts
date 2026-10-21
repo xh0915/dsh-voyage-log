@@ -119,7 +119,7 @@ export function buildMarkdown(log: VoyageLog, t: Translate, options: ReportOptio
   lines.push(t('section.timeline'))
   lines.push('')
   for (const turn of filterTurns(log, options)) {
-    lines.push(`## ${t('turn.leg', { index: String(turn.index) })} · ${span(turn.durationMs)} · ${turn.reason ?? 'open'}`)
+    lines.push(`## ${t('turn.leg', { index: String(turn.index) })} · ${span(turn.durationMs)} · ${turn.reason ?? t('turn.open')}`)
     const meta = [t('turn.steps', { count: String(turn.steps) }), t('turn.tools', { count: String(turn.toolCalls) }), t('turn.files', { count: String(turn.filesChanged) })]
     lines.push(meta.join(' / '))
     for (const row of turn.events) {
@@ -235,7 +235,7 @@ export function buildReportHtml(log: VoyageLog, t: Translate, options: ReportOpt
   if (log.truncated) chips.push(`<span class="chip warn">${esc(t('note.truncated'))}</span>`)
 
   const legBlocks = turns.map((turn) => `<section class="leg">
-<h3>${esc(t('turn.leg', { index: String(turn.index) }))} · ${esc(span(turn.durationMs))} · ${esc(turn.reason ?? 'open')}</h3>
+<h3>${esc(t('turn.leg', { index: String(turn.index) }))} · ${esc(span(turn.durationMs))} · ${esc(turn.reason ?? t('turn.open'))}</h3>
 <p class="meta">${esc([t('turn.steps', { count: String(turn.steps) }), t('turn.tools', { count: String(turn.toolCalls) }), t('turn.files', { count: String(turn.filesChanged) })].join(' / '))}</p>
 ${turn.events.map((row) => reportRow(row, t)).join('\n')}
 ${turn.capped ? `<p class="note">${esc(t('turn.capped'))}</p>` : ''}

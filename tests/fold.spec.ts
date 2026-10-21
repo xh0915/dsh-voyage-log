@@ -94,7 +94,7 @@ describe('foldSession rows', () => {
 
   it('falls back to the first prompt when no title event exists', () => {
     const log = foldSample(sampleEvents.filter((event) => event.type !== 'session/title'))
-    expect(log.title).not.toBe('无名航程')
+    expect(log.title).not.toBe('未命名会话')
     expect(log.title.length).toBeLessThanOrEqual(200)
   })
 
@@ -182,7 +182,7 @@ describe('foldSession survives an empty and a hostile log', () => {
     expect(log.counts.turns).toBe(0)
     expect(log.turns).toEqual([])
     expect(log.tokens).toEqual({ input: 0, output: 0, cacheRead: 0 })
-    expect(log.title).toBe('无名航程')
+    expect(log.title).toBe('未命名会话')
     expect(VoyageLogSchema.safeParse(log).success).toBe(true)
   })
 

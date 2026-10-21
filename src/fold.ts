@@ -549,7 +549,7 @@ export function foldSession(header: RawHeader, events: readonly RawEvent[], opti
   counts.filesRead = [...fileStats.values()].filter((cargo) => cargo.reads > 0).length
 
   const firstPrompt = turns.find((turn) => turn.prompt !== '')?.prompt ?? ''
-  const resolvedTitle = title !== '' ? title : hard(inline(firstPrompt, LIMIT.title), LIMIT.title) || '无名航程'
+  const resolvedTitle = title !== '' ? title : hard(inline(firstPrompt, LIMIT.title), LIMIT.title) || '未命名会话'
 
   const files: VoyageFile[] = [...fileStats.entries()]
     .map(([path, cargo]) => ({ path, edits: cargo.edits, writes: cargo.writes, reads: cargo.reads, lastTurn: cargo.lastTurn }))
