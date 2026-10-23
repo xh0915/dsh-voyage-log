@@ -25,13 +25,13 @@
 
 ## 长这样
 
-![航海日志标签页 · 界面设计稿](design/shots/01-voyage-light.png)
+![航海日志标签页 · 界面设计稿](https://testingcf.jsdelivr.net/gh/xh0915/dsh-voyage-log@4522dd9/design/shots/01-voyage-light.png)
 
 > 上面是界面设计稿，不是实机截图；实际渲染以安装后的 Harness 为准。
 
 导出之后拿到的那份报告，是插件真的生成出来的东西：
 
-![导出的单文件航行报告](design/shots/04-exported-report.png)
+![导出的单文件航行报告](https://testingcf.jsdelivr.net/gh/xh0915/dsh-voyage-log@4522dd9/design/shots/04-exported-report.png)
 
 > 一份真实导出的报告：样式全部内联，不引用外部资源、不含脚本，双击就能打开，也能直接打印。
 

@@ -6,7 +6,7 @@ A DeepSeek Harness tab plugin that **turns one AI session into a report you can 
 
 One conversation is one voyage. When a long session ends in DSH it is hard to say what actually happened: which files changed, how many tool calls ran, which step failed, how many tokens went in. All of it is already in the session log, but nobody wants to read raw events. Voyage Log reads them for you and lays the trip out on a few pages.
 
-![Voyage Log tab · design mockup](design/shots/01-voyage-light.png)
+![Voyage Log tab · design mockup](https://testingcf.jsdelivr.net/gh/xh0915/dsh-voyage-log@4522dd9/design/shots/01-voyage-light.png)
 
 *Design mockup, not a capture of the shipped tab. The rendered UI depends on your Harness.*
 
