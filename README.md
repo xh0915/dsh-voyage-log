@@ -1,53 +1,35 @@
-# Voyage Log · dsh-voyage-log
+# 航海日志 · dsh-voyage-log
 
-[中文](README.zh.md) | English
+**把一次 AI 会话，整理成一份看得懂的航行报告。**
 
-A DeepSeek Harness tab plugin that **turns one AI session into a report you can actually read.**
+**中文** · [English](README.en.md)
 
-One conversation is one voyage. When a long session ends in DSH it is hard to say what actually happened: which files changed, how many tool calls ran, which step failed, how many tokens went in. All of it is already in the session log, but nobody wants to read raw events. Voyage Log reads them for you and lays the trip out on a few pages.
+一次对话就是一次航行。你在 DeepSeek Harness 里跟 AI 干完一段活，往往说不清刚才到底发生了什么——它改了哪些文件、调了几次工具、哪一步失败了、一共用了多少 token。这些信息其实都在会话日志里，只是没人愿意去读那一大堆原始事件。
 
-![Voyage Log tab · design mockup](design/shots/01-voyage-light.png)
+航海日志替你读完，整理成几页纸。所有数字都是从日志里数出来的，没有估算。
 
-*Design mockup, not a capture of the shipped tab. The rendered UI depends on your Harness.*
+## 什么时候用得上
 
-## What you see once installed
+- 一段活干完了，想给别人（或三天后的自己）讲清楚做了什么。
+- 会话太长，翻聊天记录找不到「那次改动到底改了哪个文件」。
+- 想把这次工作过程存档：一键导出成**一个 HTML 文件**或一段 Markdown，直接转发。
+- 排查耗时：哪一轮最慢、哪个工具失败最多，一眼能看到。
 
-Any conversation with history gets a **Voyage Log** tab at the top. It has three sections:
+## 装完长什么样
 
-### Key numbers
+![航海日志标签页 · 界面设计稿](design/shots/01-voyage-light.png)
 
-The scorecard for the trip: wall time, turns, tool calls, failed calls, files changed and read, and tokens (input, output and cache-read counted separately).
+> 上面是界面设计稿，不是实机截图；实际渲染以安装后的 Harness 为准。
 
-Every number is measured off the log. Nothing is estimated, and there is no cost figure — the log does not carry one, so the plugin will not invent it.
+导出后的单文件报告，是插件真的生成出来的东西：
 
-### Timeline
+![导出的单文件航行报告](design/shots/04-exported-report.png)
 
-Turn by turn, in order: your prompt, the reply, each tool call with its duration and result, approvals with their outcome, retries, context compactions, and how the turn ended.
+> 一份真实导出的报告：样式全部内联，不引用外部资源、不含脚本，双击就能打开。
 
-A tool call that never received a result is shown as exactly that, instead of silently disappearing.
+## 怎么装
 
-### Files, tools and models
-
-Leaderboards for files and tools: which files were edited, written and read the most, which tools were called and failed the most, and how many replies each model produced.
-
-### Also
-
-- **Task list** — the latest todo board written in the session.
-- **Export** — copy a Markdown digest, or download / print a **single HTML file** with inline styles, no external assets and no scripts. It opens anywhere.
-
-## Privacy: it will not leak your keys
-
-Sessions often carry keys, tokens and email addresses. Everything is cleaned up *before* it reaches the UI:
-
-- Reading and folding happen **on your machine**; nothing is uploaded.
-- Private key blocks, JWTs, GitHub / AWS / Google / Slack / npm / PyPI / Stripe / DeepSeek-shaped keys, `Bearer` headers, credentials inside URLs, `api_key = …` assignments and email addresses are replaced with `«已脱敏»`.
-- The report states how many spans were masked and which families fired.
-- Things that merely look secret are left alone: `process.env.X`, `${TEMPLATE}`, `foo.bar.baz`, `ALL_CAPS_CONSTANTS` and short strings.
-- Redaction is on by default. Turn it off and the report says so, instead of pretending it ran.
-
-## Install
-
-Requires Node.js 22.19+ (or 24+) and DeepSeek Harness 0.1.0-rc.6+.
+需要 Node.js 22.19 或更高（24 也可以），以及 DeepSeek Harness 0.1.0-rc.6 或更高。
 
 ```sh
 git clone https://github.com/xh0915/dsh-voyage-log
@@ -57,76 +39,111 @@ pnpm run build
 dsh plugin --profile web add .
 ```
 
-Restart the Web Harness. Open any conversation with history and the tab is there.
+然后重启 Web Harness。随便打开一个聊过的对话，顶部就会出现「航海日志」标签。
 
-**`pnpm run build` must run before `add`.** The package ships no install-time build script (pnpm 10 blocks unapproved `prepare` scripts); skip this step and the plugin installs but fails to load.
+**`pnpm run build` 必须在 `add` 之前跑。** 这个包没有安装期构建脚本（pnpm 10 会拦截未经批准的 `prepare`），跳过这一步，插件会「装上了却加载不出来」。
 
-Remove it with:
+卸载：
 
 ```sh
 dsh plugin --profile web remove dsh-voyage-log
 ```
 
-## Settings
+## 装完怎么用
+
+打开任何有历史的对话，点顶部的 **航海日志** 标签。它读的就是你当前这个会话，不用配置、不用等。页面分三块：
+
+### 关键数字
+
+这趟航行的成绩单：聊了多久、走了几轮、调用了几次工具、失败几次、改了哪些文件、读了多少文件、烧了多少 token（输入、输出、缓存读取分开算）。
+
+没有费用——会话日志本身不记录价格，插件不会编一个。
+
+### 时间线
+
+按时间顺序，一轮一轮地还原发生了什么：你说了什么、AI 回了什么、调用了哪个工具、耗时多久、结果是什么、是否失败、审批过没过、哪里重试、哪里压缩了上下文、这一轮是怎么结束的。
+
+发了请求却始终没收到结果的工具调用，会明确标成「没有回执」，而不是悄悄消失。
+
+### 文件、工具和模型
+
+文件和工具各自的排行榜：哪些文件被改得最多、读得最多，哪些工具调用最多、失败最多，各个模型分别回复过多少次。
+
+### 还能做什么
+
+- **任务清单**：显示这次会话里最近一次写入的待办面板。
+- **导出**：复制一段 Markdown 摘要，或者下载 / 打印成**一个 HTML 文件**——样式全部内联，不引用外部资源、不含脚本，发给谁都能直接打开。
+
+## 隐私：它不会把你的密钥露出来
+
+AI 会话里经常混着各种 key、token 和邮箱。所以它在「把内容交给界面」之前，先做一遍脱敏：
+
+- 读取和整理**都在你本机完成**，不上传任何内容。
+- 私钥块、JWT、GitHub / AWS / Google / Slack / npm / PyPI / Stripe / DeepSeek 形态的密钥、`Bearer` 认证头、URL 里的账号密码、`api_key = …` 赋值、邮箱，全部替换成 `«已脱敏»`。
+- 报告里会写清楚：这次一共涂掉多少处、命中了哪些类别。
+- 只是长得像密钥的东西不会被误伤：`process.env.X`、`${TEMPLATE}`、`foo.bar.baz`、全大写常量、很短的字符串，都会原样保留。
+- 脱敏默认开启。如果你手动关掉，报告会明说「这次没有脱敏」，不会假装做过。
+
+## 可选设置
 
 ```yaml
 dsh-voyage-log:
-  redactSecrets: true   # mask secrets before they reach the UI (default)
-  maxTurnEvents: 240    # rows per turn, 20–5000
+  redactSecrets: true   # 显示前先把密钥类内容涂掉，默认开启
+  maxTurnEvents: 240    # 每一轮最多列几行，范围 20–5000
 ```
 
-When a very long turn overflows the budget, key rows are kept first, the turn is marked `capped`, and the report carries a truncation note — nothing disappears silently.
+特别长的会话里，一轮可能超出预算：这时优先保留关键行，这一轮会被标成「已截断（capped）」，报告里也会写明——不会悄悄丢内容。
 
-## Boundaries
+## 一些边界说明
 
-- **No cost figure**: the log has no price, so the plugin does not guess one.
-- **No streaming noise**: `*-chunks` incremental events are ignored by design; only events that describe the trip are read.
-- **Nothing extra is fetched**: data comes from Harness's own `sessionQuery` — the same session you can already see.
-- The UI follows Harness light and dark themes.
+- **没有费用数字**：日志里没有价格，插件不猜。
+- **流式输出不逐字记录**：`*-chunks` 这类逐字增量事件会被忽略，只看真正描述过程的事件。
+- **不额外抓取任何东西**：数据来自 Harness 自带的 `sessionQuery`，就是你自己本来就能看到的那个会话。
+- 界面跟随 Harness 的明暗主题。
 
-## Technical details
+## 技术细节
 
 <details>
-<summary>For people changing the code</summary>
+<summary>改代码的人点这里</summary>
 
-### Layout
+### 工程结构
 
 ```text
-package.json           # dsh.bundle.patch + dsh.client, scripts, peer deps
-cordis.patch.yml       # mounts the host plugin row into a profile
-dsh.plugin.json        # registry manifest
-src/index.ts           # host entry: Config schema, Remote service, Typert manifest
-src/runtime.ts         # voyage.build(sessionId) — reads the log, groups it, returns
-src/fold.ts            # the grouping engine: raw events -> turns, rows, totals
-src/redact.ts          # local secret redaction
-src/schema.ts          # Zod wire authority (types inferred, nothing drifts)
-src/contract.ts        # strict InvocationDescriptor shared by host and client
-src/typert.ts          # host reflection manifest
-src/client/index.tsx   # client entry: mounts the Remote, registers the tab
-src/client/view.tsx    # the voyage view
-src/client/report.ts   # Markdown digest + self-contained HTML report
-src/client/styles.ts   # theme-token stylesheet (follows Harness light/dark)
-src/client/locales.ts  # zh / en copy
-tests/                 # fold, redaction, contract, and report unit tests
-build.mjs              # esbuild dual build: host ESM + client CJS
+package.json           # dsh.bundle.patch + dsh.client、脚本、peer 依赖
+cordis.patch.yml       # 把宿主插件行挂进 profile
+dsh.plugin.json        # 注册表清单
+src/index.ts           # 宿主入口：Config、Remote 服务、Typert 清单
+src/runtime.ts         # voyage.build(sessionId)：读日志、整理、返回
+src/fold.ts            # 整理引擎：原始事件 -> 轮次、行、汇总
+src/redact.ts          # 本地脱敏
+src/schema.ts          # Zod 线上契约（类型由此推导，不会漂移）
+src/contract.ts        # 宿主与客户端共享的严格 InvocationDescriptor
+src/typert.ts          # 宿主反射清单
+src/client/index.tsx   # 客户端入口：挂 Remote、注册标签页
+src/client/view.tsx    # 航海日志视图
+src/client/report.ts   # Markdown 摘要 + 自包含 HTML 报告
+src/client/styles.ts   # 主题令牌样式表（跟随 Harness 明暗）
+src/client/locales.ts  # 中文 / 英文文案
+tests/                 # 整理、脱敏、接口、报告单元测试
+build.mjs              # esbuild 双构建：宿主 ESM + 客户端 CJS
 ```
 
-The client half contributes **no** prompt, tool, or session event — `ctx.typert.register()` only publishes reflection metadata. The plugin is UI over your own data.
+客户端半边**不**贡献任何 prompt、工具或会话事件——`ctx.typert.register()` 只发布反射元数据。这个插件只是在你自己数据上加的一层界面。
 
-### Development
+### 开发
 
 ```sh
-pnpm run check   # typecheck + lint + test + build
+pnpm run check   # 类型检查 + lint + 测试 + 构建
 ```
 
-### Renaming
+### 改名
 
-If you fork this and rename it, keep these in sync: `package.json` → `name`, `exports`, `files`; `build.mjs` → the `__ModuleLoader__.load` id; `src/index.ts` → `name`; `src/client/remote.ts` → the hex-encoded `TypertRemoteNamespace$…` name; `src/client/locales.ts` → the locale namespace; `src/client/index.tsx` → the slot id; `src/typert.ts` → `package`; `src/contract.ts` → the invocation id; `cordis.patch.yml` → `id` and `name`; `dsh.plugin.json` → `id`.
+fork 后如果要改名，这些地方必须同步：`package.json` → `name`、`exports`、`files`；`build.mjs` → `__ModuleLoader__.load` 的 id；`src/index.ts` → `name`；`src/client/remote.ts` → 十六进制编码的 `TypertRemoteNamespace$…`；`src/client/locales.ts` → locale 命名空间；`src/client/index.tsx` → slot id；`src/typert.ts` → `package`；`src/contract.ts` → invocation id；`cordis.patch.yml` → `id` 与 `name`；`dsh.plugin.json` → `id`。
 
 </details>
 
-## License
+## 许可证
 
 MIT
 
-Built by [里卡多 / xh0915](https://xh0915.github.io)
+作者：[里卡多 / xh0915](https://xh0915.github.io)
